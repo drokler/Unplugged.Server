@@ -31,19 +31,20 @@ namespace Unplugged.Server.Services
                 };
             }
 
-            var token = JwtTokenValidator.GetToken(user.Login, UserRole.Moderator.ToString());
+            var token = JwtTokenValidator.GetToken(user.Login, user.Role.ToString());
             return new AuthResponse
             {
                 Token = token,
                 Status = ResponseStatus.RsOk
             };
         }
-        [Authorize(Policy = nameof(UserRole.Admin))]
-        public override Task<EmptyResponse> TestAuth(EmptyRequest request, ServerCallContext context)
+        [Authorize(Policy = nameof(UserRole.Common))]
+        public override Task<EmptyResponse> IsLogin(EmptyRequest request, ServerCallContext context)
         {
-            var user = context.GetHttpContext().User.IsInRole(UserRole.Admin.ToString());
-
-            return Task.FromResult(new EmptyResponse());
+            return Task.FromResult(new EmptyResponse
+            {
+                Status = ResponseStatus.RsOk
+            });
         }
     }
 }

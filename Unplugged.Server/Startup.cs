@@ -11,6 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 using Unplugged.Server.Database;
 using UnpluggedModel;
 using UserService = Unplugged.Server.Services.UserService;
+using EventService = Unplugged.Server.Services.EventService;
+using PresentationService = Unplugged.Server.Services.PresentationService;
 
 namespace Unplugged.Server
 {
@@ -42,6 +44,8 @@ namespace Unplugged.Server
                 options => options.UseNpgsql(connString));
 
             services.AddScoped<UserService>();
+            services.AddScoped<EventService>();
+            services.AddScoped<PresentationService>();
             services.AddGrpc();
 
             services.AddAuthentication(options =>
@@ -62,9 +66,9 @@ namespace Unplugged.Server
 
                 });
                 options.AddPolicy(UserRole.Admin.ToString(), policy =>
-                    policy.RequireClaim(ClaimTypes.Role, UserRole.Common.ToString()));
+                    policy.RequireClaim(ClaimTypes.Role, UserRole.Admin.ToString()));
                 options.AddPolicy(UserRole.Moderator.ToString(), policy =>
-                    policy.RequireClaim(ClaimTypes.Role, UserRole.Moderator.ToString(), UserRole.Common.ToString()));
+                    policy.RequireClaim(ClaimTypes.Role, UserRole.Moderator.ToString(), UserRole.Admin.ToString()));
                 options.AddPolicy(UserRole.Common.ToString(), policy =>
                     policy.RequireClaim(ClaimTypes.Role,UserRole.Admin.ToString(), UserRole.Moderator.ToString(), UserRole.Common.ToString()));
 
@@ -88,7 +92,12 @@ namespace Unplugged.Server
             {
                 endpoints.MapGrpcService<UserService>().EnableGrpcWeb()
                     .RequireCors("AllowAll");
-            
+                endpoints.MapGrpcService<EventService>().EnableGrpcWeb()
+                    .RequireCors("AllowAll");
+                endpoints.MapGrpcService<PresentationService>().EnableGrpcWeb()
+                    .RequireCors("AllowAll");
+
+
 
                 endpoints.MapGet("/", async context =>
                 {

@@ -2,7 +2,7 @@
 
 namespace Unplugged.Server.Migrations
 {
-    public partial class Inti : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,7 +14,10 @@ namespace Unplugged.Server.Migrations
                     EventName = table.Column<string>(type: "text", nullable: true),
                     Type = table.Column<int>(type: "integer", nullable: false),
                     StartTime = table.Column<long>(type: "bigint", nullable: false),
-                    StreamUrl = table.Column<string>(type: "text", nullable: true)
+                    StreamUrl = table.Column<string>(type: "text", nullable: true),
+                    CoverData = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    AdditionalInfo = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -55,21 +58,29 @@ namespace Unplugged.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
                     EventId = table.Column<string>(type: "text", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    AdditionalFileUrls = table.Column<string>(type: "text", nullable: true)
+                    AdditionalFileUrls = table.Column<string>(type: "text", nullable: true),
+                    Duration = table.Column<int>(type: "integer", nullable: false),
+                    EventId1 = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Presentations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Presentations_Events_EventId",
-                        column: x => x.EventId,
+                        name: "FK_Presentations_Events_EventId1",
+                        column: x => x.EventId1,
                         principalTable: "Events",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Presentations_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,12 +127,40 @@ namespace Unplugged.Server.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "ConnectInfo", "Fio", "Login", "Password", "Role" },
-                values: new object[] { "00000000-0000-0000-0000-000000000000", "", "Admin", "Admin", "QWEqwe123", 0 });
+                values: new object[,]
+                {
+                    { "00000000-0000-0000-0000-000000000000", "contact info", "Admin", "Admin", "QWEqwe123", 0 },
+                    { "00000000-0000-0000-0000-000000000001", "contact info", "Moderator", "Moderator", "QWEqwe123", 1 },
+                    { "00000000-0000-0000-0000-000000000002", "https://vk.com/mypag", "Трембрвецкий Николай", "koperniki", "org100h", 2 },
+                    { "00000000-0000-0000-0000-000000000003", "contact info", "Куркутов Павел", "kpavel", "QWEqwe123", 2 },
+                    { "00000000-0000-0000-0000-000000000004", "contact info", "Адаричев Вадим", "avadik", "QWEqwe123", 2 },
+                    { "00000000-0000-0000-0000-000000000005", "contact info", "Библенко Артем", "bartem", "QWEqwe123", 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Presentations",
+                columns: new[] { "Id", "AdditionalFileUrls", "Description", "Duration", "EventId1", "Name", "UserId", "EventId" },
+                values: new object[,]
+                {
+                    { "00000000-0000-0000-0000-000000000102", "tap-fileserver/d1", "Плюсы и минусы программирования на flutter", 25, null, "Как я на флатере писал", "00000000-0000-0000-0000-000000000002", null },
+                    { "00000000-0000-0000-0000-000000000202", "tap-fileserver/d2", "Минусов оказалось больше", 35, null, "Как я покончил с флатером", "00000000-0000-0000-0000-000000000002", null },
+                    { "00000000-0000-0000-0000-000000000103", "tap-fileserver/d3", "Пишем свою rougelike рпг. Как не попасть в петлю.", 30, null, "Рогалики и сурки", "00000000-0000-0000-0000-000000000003", null },
+                    { "00000000-0000-0000-0000-000000000203", "tap-fileserver/d4", "Или про то как я писал свою аркаду.", 20, null, "Каждый может быть манагером", "00000000-0000-0000-0000-000000000003", null },
+                    { "00000000-0000-0000-0000-000000000104", "tap-fileserver/d5", "Что лучше python или .net core", 25, null, "Давим змею", "00000000-0000-0000-0000-000000000004", null },
+                    { "00000000-0000-0000-0000-000000000204", "tap-fileserver/d6", "Реестр карьеров и возникшие там проблемы", 40, null, "Щель в земле", "00000000-0000-0000-0000-000000000004", null },
+                    { "00000000-0000-0000-0000-000000000105", "tap-fileserver/d7", "Или почему в Маяке все не очень", 25, null, "Темно как в жо...", "00000000-0000-0000-0000-000000000005", null },
+                    { "00000000-0000-0000-0000-000000000205", "tap-fileserver/d8", "лень было думать", 35, null, "Рандомный доклад", "00000000-0000-0000-0000-000000000005", null }
+                });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Presentations_EventId",
+                name: "IX_Presentations_EventId1",
                 table: "Presentations",
-                column: "EventId");
+                column: "EventId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Presentations_UserId",
+                table: "Presentations",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rates_PresentationId",
@@ -143,9 +182,6 @@ namespace Unplugged.Server.Migrations
                 name: "Registrations");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "Rates");
 
             migrationBuilder.DropTable(
@@ -153,6 +189,9 @@ namespace Unplugged.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Events");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }
