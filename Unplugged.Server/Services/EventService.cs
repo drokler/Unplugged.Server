@@ -25,7 +25,7 @@ namespace Unplugged.Server.Services
             var events = await _ctx.Events.ToListAsync();
             var ret = new EventListResponse();
             ret.Events.AddRange(events);
-            var file = File.ReadAllBytes("D:\\хакатон\\cover.jpg");
+            var file = File.ReadAllBytes(".\\cover.jpg");
             var data = Convert.ToBase64String(file);
             var small = ImageUtils.GetSmallBase64(data);
             for (int i = 0; i < 22; i++)

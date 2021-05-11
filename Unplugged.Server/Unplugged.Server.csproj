@@ -25,6 +25,11 @@
   <ItemGroup>
     <Protobuf Include="Proto\unplugged.proto" GrpcServices="Server" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="cover.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 
 </Project>
