@@ -1,0 +1,168 @@
+syntax = "proto3";
+option csharp_namespace = "UnpluggedModel";
+package UnpluggedModel;
+
+
+/*-----------------------------Seedwork---------------------------*/
+message EmptyRequest {
+
+}
+
+message EmptyResponse {
+	ResponseStatus status = 1;
+	string response_description = 2;
+}
+
+
+enum ResponseStatus {
+	rs_unknown = 0;
+	rs_ok = 1;
+	rs_error = 2;
+}
+
+/*-----------------------------Seedwork---------------------------*/
+
+
+/*-----------------------------EventService---------------------------*/
+service EventService {
+	rpc GetList(EmptyRequest) returns (EventListResponse) {};
+	rpc CreateEvent(Event) returns (EmptyResponse) {};
+}
+
+
+message EventListResponse {
+	ResponseStatus status = 1;
+	string response_description = 2;
+	repeated Event Events = 3;
+}
+
+/*-----------------------------EventService---------------------------*/
+
+/*-----------------------------Presentation---------------------------*/
+
+service PresentationService {
+	rpc GetPresentationList(EmptyRequest) returns (PresentationListResponse) {};
+
+}
+
+
+message PresentationListResponse {
+	ResponseStatus status = 1;
+	string response_description = 2;
+	repeated Presentation Presentations = 3;
+}
+
+/*-----------------------------Presentation---------------------------*/
+
+/*-----------------------------RateService---------------------------*/
+
+/*-----------------------------RateService---------------------------*/
+
+
+/*-----------------------------UserService---------------------------*/
+
+service UserService {
+	rpc Auth(AuthRequest) returns (AuthResponse) {};
+	rpc IsLogin(EmptyRequest) returns (EmptyResponse) {};
+}
+
+
+message AuthRequest {
+	string login = 1;
+	string password = 2;
+}
+
+message AuthResponse {
+	ResponseStatus status = 1;
+	string response_description = 2;
+	string token = 3;
+}
+
+/*-----------------------------UserService---------------------------*/
+
+
+
+
+/*-----------------------------models---------------------------*/
+message Event {
+	string id = 1;
+	string event_name = 2;
+	EventType type = 3;
+	int64 start_time = 4;
+	repeated Presentation presentations = 5; 
+	string stream_url = 6;
+	string cover_data = 7;
+	EventStatus status = 8;
+	string additional_info = 9;
+}
+
+message User {
+	string id = 1;
+	string fio = 2;
+	string connect_info = 3;
+	string login = 4;
+	string password = 5;
+	UserRole role = 6;
+}
+
+message UserRegistration {
+	string id = 1;
+	string fio = 2;
+	string registration_token = 3;
+}
+
+message Presentation {
+	string id  = 1;
+	repeated Rate Rates = 2;
+	string user_id = 3;
+	User user = 4;
+	string event_id = 5;	
+	string name = 6;
+	string description = 7;
+	string additional_file_urls = 8;
+	int32 duration = 9;
+}
+ 
+message Rate {
+	string id = 1;
+	string presentation_id = 2;
+	string user_id = 3;
+	repeated RateSpecies species = 4;
+	double total_rate_value = 5;
+	string comment = 6;
+}
+
+message RateSpecies {
+	string id = 1;
+	string rate_id = 2;
+	RateSpaciesType type = 3;
+	double rate_value = 4;
+}
+
+enum RateSpaciesType {
+	interest = 0;
+}
+
+enum EventType {
+	unplugged = 0;
+	quarterly_report = 1;
+	annual_report = 2;
+	boss_stand_up = 3;
+	hackathon = 4;
+}
+
+enum EventStatus {
+	planning = 0;
+	going = 1;
+	canceled = 2;
+	finished = 3;
+}
+
+enum UserRole {
+	Admin = 0;
+	Moderator = 1;
+	Common = 2;
+}
+
+
+/*-----------------------------models---------------------------*/
